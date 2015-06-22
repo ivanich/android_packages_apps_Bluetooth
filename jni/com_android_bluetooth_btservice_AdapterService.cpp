@@ -890,6 +890,27 @@ static jboolean disableNative(JNIEnv* env, jobject obj) {
     return result;
 }
 
+static jboolean enableRadioNative(JNIEnv* env, jobject obj) {
+    ALOGV("%s:",__FUNCTION__);
+    jboolean result = JNI_FALSE;
+    if (!sBluetoothInterface) return result;
+
+    int ret = sBluetoothInterface->enableRadio();
+    result = (ret == BT_STATUS_SUCCESS) ? JNI_TRUE : JNI_FALSE;
+    return result;
+}
+
+static jboolean disableRadioNative(JNIEnv* env, jobject obj) {
+    ALOGV("%s:",__FUNCTION__);
+
+    jboolean result = JNI_FALSE;
+    if (!sBluetoothInterface) return result;
+
+    int ret = sBluetoothInterface->disableRadio();
+    result = (ret == BT_STATUS_SUCCESS) ? JNI_TRUE : JNI_FALSE;
+    return result;
+}
+
 static jboolean startDiscoveryNative(JNIEnv* env, jobject obj) {
     ALOGV("%s:",__FUNCTION__);
 
@@ -1356,6 +1377,8 @@ static JNINativeMethod sMethods[] = {
     {"ssrcleanupNative", "(Z)V", (void*) ssrcleanupNative},
     {"enableNative", "()Z",  (void*) enableNative},
     {"disableNative", "()Z",  (void*) disableNative},
+    {"enableRadioNative", "()Z",  (void*) enableRadioNative},
+    {"disableRadioNative", "()Z",  (void*) disableRadioNative},
     {"setAdapterPropertyNative", "(I[B)Z", (void*) setAdapterPropertyNative},
     {"getAdapterPropertiesNative", "()Z", (void*) getAdapterPropertiesNative},
     {"getAdapterPropertyNative", "(I)Z", (void*) getAdapterPropertyNative},
@@ -1472,6 +1495,10 @@ jint JNI_OnLoad(JavaVM *jvm, void *reserved)
     if ((status = android::register_com_android_bluetooth_btservice_QAdapterService(e)) < 0) {
         ALOGE("jni Q adapter service failure: %d", status);
         return JNI_ERR;
+    }
+    if ((status = android::register_com_broadcom_fm_service(e)) < 0) {
+       ALOGE("jni FM service registration failure: %d", status);
+      return JNI_ERR;
     }
     return JNI_VERSION_1_6;
 }

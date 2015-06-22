@@ -27,6 +27,9 @@ final public class AbstractionLayer {
     // Get rid of them and maintain just one.
     static final int BT_STATE_OFF = 0x00;
     static final int BT_STATE_ON = 0x01;
+    static final int BT_RADIO_OFF = 0x02;
+    static final int BT_RADIO_ON = 0x03;
+
 
     static final int BT_SCAN_MODE_NONE = 0x00;
     static final int BT_SCAN_MODE_CONNECTABLE = 0x01;

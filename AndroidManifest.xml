@@ -17,6 +17,17 @@
         android:description="@string/permdesc_bluetoothWhitelist"
         android:protectionLevel="signature" />
 
+    <!--  Allows receiving handover status broadcasts from Bluetooth -->,
+    <permission android:name="com.android.permission.HANDOVER_STATUS"
+        android:label="@string/permlab_handoverStatus"
+        android:description="@string/permdesc_handoverStatus"
+        android:protectionLevel="signature" />
+
+    <permission android:name="android.permission.ACCESS_FM_RECEIVER"
+        android:permissionGroup="android.permission-group.NETWORK"
+        android:protectionLevel="normal"
+        android:description="@string/permdesc_fm_receiver"
+        android:label="@string/permlab_fm_receiver" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_BLUETOOTH_SHARE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -62,6 +73,9 @@
 
     <!-- For PBAP Owner Vcard Info -->
     <uses-permission android:name="android.permission.READ_PROFILE"/>
+    <!-- For FM -->
+    <uses-permission android:name="android.permission.ACCESS_FM_RECEIVER" />
+    
     <application
         android:name=".btservice.AdapterApp"
         android:icon="@mipmap/ic_launcher_bluetooth"
@@ -72,6 +86,9 @@
             android:name="javax.btobex"></uses-library>
 
 
+        <uses-library android:name="javax.obex" />
+
+        <uses-library android:name="com.broadcom.bt" />
         <provider android:name=".opp.BluetoothOppProvider"
             android:authorities="com.android.bluetooth.opp"
             android:exported="true"
@@ -348,6 +365,13 @@
             <intent-filter>
                 <action android:name="android.bluetooth.IBluetoothHidDevice" />
             </intent-filter>
+        </service>
+        <service
+          android:process="@string/process"
+          android:name = "com.broadcom.fm.fmreceiver.FmService">
+          <intent-filter>
+            <action android:name="com.broadcom.fm.fmreceiver.IFmReceiverService" />
+          </intent-filter>
         </service>
     </application>
 </manifest>

@@ -14,6 +14,7 @@ LOCAL_JAVA_LIBRARIES += javax.btobex
 LOCAL_JAVA_LIBRARIES += telephony-common
 LOCAL_STATIC_JAVA_LIBRARIES := com.android.vcard
 LOCAL_STATIC_JAVA_LIBRARIES += com.android.emailcommon
+LOCAL_JAVA_LIBRARIES += com.broadcom.bt 
 
 LOCAL_REQUIRED_MODULES := bluetooth.default
 LOCAL_MULTILIB := 32

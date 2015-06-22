@@ -470,6 +470,10 @@ public class AdapterService extends Service {
             }
             mCallbacks.finishBroadcast();
         }
+		if(newState == BluetoothAdapter.STATE_ON)
+		{
+			enableRadio();
+		}
     }
 
     void cleanup () {
@@ -701,6 +705,12 @@ public class AdapterService extends Service {
             return service.isEnabled();
         }
 
+        public boolean isRadioEnabled() {
+            AdapterService service = getService();
+            if (service == null) return false;
+            return service.isRadioEnabled();
+        }
+
         public int getState() {
             // don't check caller, may be called from system UI
             AdapterService service = getService();
@@ -742,6 +752,18 @@ public class AdapterService extends Service {
             AdapterService service = getService();
             if (service == null) return false;
             return service.disable();
+        }
+
+        public boolean enableRadio() {
+            AdapterService service = getService();
+            if (service == null) return false;
+            return service.enableRadio();
+        }
+
+        public boolean disableRadio() {
+            AdapterService service = getService();
+            if (service == null) return false;
+            return service.disableRadio();
         }
 
         public String getAddress() {
@@ -1277,6 +1299,11 @@ public class AdapterService extends Service {
         return mAdapterProperties.getState() == BluetoothAdapter.STATE_ON;
     }
 
+     boolean isRadioEnabled() {
+         enforceCallingOrSelfPermission(BLUETOOTH_PERM, "Need BLUETOOTH permission");
+         return mAdapterStateMachine.isRadioOn();
+     }
+
      int getState() {
         enforceCallingOrSelfPermission(BLUETOOTH_PERM, "Need BLUETOOTH permission");
 
@@ -1291,6 +1318,26 @@ public class AdapterService extends Service {
 
      boolean enable() {
         return enable (false);
+    }
+
+     boolean enableRadio() {
+      enforceCallingOrSelfPermission(BLUETOOTH_ADMIN_PERM,
+              "Need BLUETOOTH ADMIN permission");
+      if (DBG) debugLog("enableRadio() called...");
+      Message m =
+              mAdapterStateMachine.obtainMessage(AdapterState.USER_TURN_ON_RADIO);
+      mAdapterStateMachine.sendMessage(m);
+      return true;
+     }
+
+     boolean disableRadio() {
+      enforceCallingOrSelfPermission(BLUETOOTH_ADMIN_PERM,
+              "Need BLUETOOTH ADMIN permission");
+      if (DBG) debugLog("disableRadio() called...");
+      Message m =
+              mAdapterStateMachine.obtainMessage(AdapterState.USER_TURN_OFF_RADIO);
+      mAdapterStateMachine.sendMessage(m);
+      return true;
     }
 
       public boolean enableNoAutoConnect() {
@@ -1422,10 +1469,6 @@ public class AdapterService extends Service {
         if (deviceProp != null && deviceProp.getBondState() != BluetoothDevice.BOND_NONE) {
             return false;
         }
-
-        // Pairing is unreliable while scanning, so cancel discovery
-        // Note, remove this when native stack improves
-        cancelDiscoveryNative();
 
         Message msg = mBondStateMachine.obtainMessage(BondStateMachine.CREATE_BOND);
         msg.obj = device;
@@ -1897,7 +1940,7 @@ public class AdapterService extends Service {
             device, int profile, int state, int prevState) {
         // TODO(BT) permission check?
         // Since this is a binder call check if Bluetooth is on still
-        if (getState() == BluetoothAdapter.STATE_OFF) return;
+        if (getState() == BluetoothAdapter.STATE_RADIO_OFF) return;
 
         mAdapterProperties.sendConnectionStateChange(device, profile, state, prevState);
 
@@ -2167,6 +2210,8 @@ public class AdapterService extends Service {
     private native boolean initNative();
     private native void cleanupNative();
     /*package*/ native void ssrcleanupNative(boolean cleanup);
+    /*package*/ native boolean enableRadioNative();
+    /*package*/ native boolean disableRadioNative();
     /*package*/ native boolean enableNative();
     /*package*/ native boolean disableNative();
     /*package*/ native boolean setAdapterPropertyNative(int type, byte[] val);

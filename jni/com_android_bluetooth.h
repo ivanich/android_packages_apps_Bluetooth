@@ -55,6 +55,10 @@ int register_com_android_bluetooth_pan(JNIEnv* env);
 int register_com_android_bluetooth_gatt (JNIEnv* env);
 
 int register_com_android_bluetooth_btservice_QAdapterService(JNIEnv* env);
+
+//BRCM Enhancement
+int register_com_broadcom_fm_service(JNIEnv* env);
+//End BRCM Enhancement
 }
 
 #endif /* COM_ANDROID_BLUETOOTH_H */
